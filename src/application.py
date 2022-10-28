@@ -13,6 +13,7 @@ app = Flask(__name__,
 
 CORS(app)
 
+
 @app.get("/api/post")
 def get_health():
     t = str(datetime.now())
@@ -30,7 +31,6 @@ def get_health():
 
 @app.route("/api/post/<pid>", methods=["GET"])
 def get_post_by_pid(pid):
-
     result = PostResource.get_by_key(pid)
 
     if result:
@@ -39,6 +39,7 @@ def get_post_by_pid(pid):
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
     return rsp
+
 
 @app.route("/api/post/create", methods=["POST"])
 def create_post_by_pid():
@@ -55,6 +56,7 @@ def create_post_by_pid():
 
     return rsp
 
+
 @app.route("/api/post/update", methods=["PUT"])
 def update_post_by_pid():
     pid = request.args.get('pid', None)
@@ -70,6 +72,7 @@ def update_post_by_pid():
 
     return rsp
 
+
 @app.route("/api/post/delete", methods=["DELETE"])
 def delete_post_by_pid():
     pid = request.args.get('pid', None)
@@ -84,6 +87,6 @@ def delete_post_by_pid():
 
     return rsp
 
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
-

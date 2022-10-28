@@ -32,6 +32,7 @@ class PostResource:
         if key == "all":
             sql = "SELECT * FROM f22_cc_databases.post_table"
             res = cur.execute(sql)
+            # ToDo: fetchmany() can be used when pagination
             result = cur.fetchall()
         else:
             sql = "SELECT * FROM f22_cc_databases.post_table where pid=%s"
