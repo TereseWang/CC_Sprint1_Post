@@ -27,11 +27,16 @@ class PostResource:
     @staticmethod
     def get_by_key(key):
 
-        sql = "SELECT * FROM f22_cc_databases.post_table where pid=%s";
         conn = PostResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, args=key)
-        result = cur.fetchone()
+        if key == "all":
+            sql = "SELECT * FROM f22_cc_databases.post_table"
+            res = cur.execute(sql)
+            result = cur.fetchall()
+        else:
+            sql = "SELECT * FROM f22_cc_databases.post_table where pid=%s"
+            res = cur.execute(sql, args=key)
+            result = cur.fetchone()
 
         return result
 
@@ -65,6 +70,24 @@ class PostResource:
             conn = PostResource._get_connection()
             cur = conn.cursor()
             res = cur.execute(delete_sql, args=pid)
+            result = PostResource.get_by_key(pid)
+        except Exception as e:
+            print("Exception: ", e)
+
+        return result
+
+    @staticmethod
+    def update_by_key(pid, content):
+        update_sql = """
+                UPDATE f22_cc_databases.post_table 
+                SET post=%s
+                WHERE pid=%s
+            """
+        result = None
+        try:
+            conn = PostResource._get_connection()
+            cur = conn.cursor()
+            res = cur.execute(update_sql, args=[content, pid])
             result = PostResource.get_by_key(pid)
         except Exception as e:
             print("Exception: ", e)

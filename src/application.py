@@ -44,7 +44,7 @@ def get_post_by_pid(pid):
 def create_post_by_pid():
     uid = request.args.get('uid', None)
     post_content = request.args.get('content', None)
-    print("uid and post content is ", uid, post_content)
+    print("Uid and post content is ", uid, post_content)
 
     result = PostResource.create_by_user(uid, post_content)
 
@@ -52,6 +52,21 @@ def create_post_by_pid():
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
         rsp = Response("NOT SUCCESSFULLY CREATE", status=404, content_type="text/plain")
+
+    return rsp
+
+@app.route("/api/post/update", methods=["PUT"])
+def update_post_by_pid():
+    pid = request.args.get('pid', None)
+    content = request.args.get('content', None)
+    print("Post to be updated is ", pid)
+
+    result = PostResource.update_by_key(pid, content)
+
+    if result:
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT SUCCESSFULLY UPDATE", status=404, content_type="text/plain")
 
     return rsp
 
@@ -65,7 +80,7 @@ def delete_post_by_pid():
     if result:
         rsp = Response("NOT SUCCESSFULLY DELETE", status=404, content_type="text/plain")
     else:
-        rsp = Response("SUCCESSFULLY DELETE", status=404, content_type="text/plain")
+        rsp = Response("SUCCESSFULLY DELETE", status=200, content_type="text/plain")
 
     return rsp
 
