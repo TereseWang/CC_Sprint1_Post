@@ -40,20 +40,32 @@ def get_post_by_pid(pid):
 
     return rsp
 
-@app.route("/api/post/create/<uid>/<content>", methods=["POST"])
-def create_post_by_pid(uid, post_content):
-    # print("111")
-    # uid = request.args.get('userid', None)
-    # post_content = request.args.get('content', None)
-    print("here")
-    print(uid, post_content)
+@app.route("/api/post/create", methods=["POST"])
+def create_post_by_pid():
+    uid = request.args.get('uid', None)
+    post_content = request.args.get('content', None)
+    print("uid and post content is ", uid, post_content)
 
     result = PostResource.create_by_user(uid, post_content)
 
     if result:
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
-        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+        rsp = Response("NOT SUCCESSFULLY CREATE", status=404, content_type="text/plain")
+
+    return rsp
+
+@app.route("/api/post/delete", methods=["DELETE"])
+def delete_post_by_pid():
+    pid = request.args.get('pid', None)
+    print("Post to be deleted is ", pid)
+
+    result = PostResource.delete_by_key(pid)
+
+    if result:
+        rsp = Response("NOT SUCCESSFULLY DELETE", status=404, content_type="text/plain")
+    else:
+        rsp = Response("SUCCESSFULLY DELETE", status=404, content_type="text/plain")
 
     return rsp
 

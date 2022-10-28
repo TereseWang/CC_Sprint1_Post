@@ -37,16 +37,36 @@ class PostResource:
 
     @staticmethod
     def create_by_user(uid, post_content):
-        pid = random.randint(10000)
+        pid = random.randint(0, 10000)
         insert_sql = """
             insert into f22_cc_databases.post_table(pid, uid, post)
             values(%s,%s,%s)
         """
 
-        # sql = "SELECT * FROM f22_cc_databases.post_table where pid=%s";
-        conn = PostResource._get_connection()
-        cur = conn.cursor()
-        res = cur.execute(insert_sql, args=[pid, uid, post_content])
-        result = cur.fetchone()
+        result = None
+        try:
+            conn = PostResource._get_connection()
+            cur = conn.cursor()
+            res = cur.execute(insert_sql, args=[pid, uid, post_content])
+            result = PostResource.get_by_key(pid)
+        except Exception as e:
+            print("Exception: ", e)
+
+        return result
+
+    @staticmethod
+    def delete_by_key(pid):
+        delete_sql = """
+            DELETE FROM f22_cc_databases.post_table WHERE pid=%s
+        """
+
+        result = None
+        try:
+            conn = PostResource._get_connection()
+            cur = conn.cursor()
+            res = cur.execute(delete_sql, args=pid)
+            result = PostResource.get_by_key(pid)
+        except Exception as e:
+            print("Exception: ", e)
 
         return result
