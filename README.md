@@ -1,15 +1,13 @@
-# F22-Starter-Microservice
+# CC-Post-Microservice
 
 ## Introduction
 
-This is a simple Flask based starter microservice for F22 Columbia classes.
+This is a simple Flask based starter microservice for Post.
 
 
 ## Setup
 
-- For the purposes of E6156 and W4111, please install PyCharm Professional.
-- University students can register for a free, one year license.
-- Also, please make sure that your system has already installed:
+- Please make sure that your system has already installed:
   - Python (3.9 or greater)
   - MySQL Community Server
 
@@ -32,6 +30,6 @@ Select the file ```tts.py``` and run it. The message will determine if your end-
 
 ## Connecting to the Database
 
-The file ```columbia_student_resource.py``` is a simple, starter REST resource.
+The file ```post_resource.py``` is a simple, starter REST resource.
 
 

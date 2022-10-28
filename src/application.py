@@ -1,7 +1,8 @@
 from flask import Flask, Response, request
 from datetime import datetime
 import json
-from columbia_student_resource import ColumbiaStudentResource
+from post_resource import PostResource
+from post import Post
 from flask_cors import CORS
 
 # Create the Flask application object.
@@ -12,12 +13,11 @@ app = Flask(__name__,
 
 CORS(app)
 
-
-@app.get("/api/health")
+@app.get("/api/post")
 def get_health():
     t = str(datetime.now())
     msg = {
-        "name": "F22-Starter-Microservice",
+        "name": "CC-POST_SERVICE",
         "health": "Good",
         "at time": t
     }
@@ -28,10 +28,27 @@ def get_health():
     return result
 
 
-@app.route("/api/students/<uni>", methods=["GET"])
-def get_student_by_uni(uni):
+@app.route("/api/post/<pid>", methods=["GET"])
+def get_post_by_pid(pid):
 
-    result = ColumbiaStudentResource.get_by_key(uni)
+    result = PostResource.get_by_key(pid)
+
+    if result:
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+
+    return rsp
+
+@app.route("/api/post/create/<uid>/<content>", methods=["POST"])
+def create_post_by_pid(uid, post_content):
+    # print("111")
+    # uid = request.args.get('userid', None)
+    # post_content = request.args.get('content', None)
+    print("here")
+    print(uid, post_content)
+
+    result = PostResource.create_by_user(uid, post_content)
 
     if result:
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
