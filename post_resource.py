@@ -35,7 +35,7 @@ class PostResource:
             # ToDo: fetchmany() can be used when pagination
             result = cur.fetchall()
         else:
-            sql = "SELECT * FROM f22_cc_databases.post_table where pid=%s"
+            sql = "SELECT * FROM f22_cc_databases.post_table where postId=%d"
             res = cur.execute(sql, args=key)
             result = cur.fetchone()
 
@@ -43,10 +43,10 @@ class PostResource:
 
     @staticmethod
     def create_by_user(uid, post_content):
-        pid = random.randint(0, 10000)
+        pid = random.randint(0, 10000000000)
         insert_sql = """
-            insert into f22_cc_databases.post_table(pid, uid, post)
-            values(%s,%s,%s)
+            insert into f22_cc_databases.post_table(postId, userId, post)
+            values(%d,%d,%s)
         """
 
         result = None
@@ -63,7 +63,7 @@ class PostResource:
     @staticmethod
     def delete_by_key(pid):
         delete_sql = """
-            DELETE FROM f22_cc_databases.post_table WHERE pid=%s
+            DELETE FROM f22_cc_databases.post_table WHERE postId=%d
         """
 
         result = None
@@ -82,7 +82,7 @@ class PostResource:
         update_sql = """
                 UPDATE f22_cc_databases.post_table 
                 SET post=%s
-                WHERE pid=%s
+                WHERE postId=%d
             """
         result = None
         try:
