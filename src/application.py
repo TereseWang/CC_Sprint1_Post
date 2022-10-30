@@ -31,7 +31,7 @@ def get_health():
 
 @application.route("/api/post/<pid>", methods=["GET"])
 def get_post_by_pid(pid):
-    result = PostResource.get_by_key(pid)
+    result = PostResource.get_by_key(int(pid))
 
     if result:
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
@@ -43,7 +43,7 @@ def get_post_by_pid(pid):
 
 @application.route("/api/post/create", methods=["POST"])
 def create_post_by_pid():
-    uid = request.args.get('uid', None)
+    uid = int(request.args.get('userId', None))
     post_content = request.args.get('content', None)
     print("Uid and post content is ", uid, post_content)
 
@@ -59,7 +59,7 @@ def create_post_by_pid():
 
 @application.route("/api/post/update", methods=["PUT"])
 def update_post_by_pid():
-    pid = request.args.get('pid', None)
+    pid = int(request.args.get('postId', None))
     content = request.args.get('content', None)
     print("Post to be updated is ", pid)
 
@@ -75,7 +75,7 @@ def update_post_by_pid():
 
 @application.route("/api/post/delete", methods=["DELETE"])
 def delete_post_by_pid():
-    pid = request.args.get('pid', None)
+    pid = int(request.args.get('postId', None))
     print("Post to be deleted is ", pid)
 
     result = PostResource.delete_by_key(pid)
