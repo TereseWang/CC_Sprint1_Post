@@ -31,62 +31,54 @@ def get_health():
 
 @application.route("/api/post/<pid>", methods=["GET"])
 def get_post_by_pid(pid):
-    result = PostResource.get_by_key(int(pid))
+    result = PostResource.get_by_key(pid)
 
     if result:
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
-        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+        rsp = Response("NOT FOUND", status=404, content_type="application.json")
 
     return rsp
 
 
-@application.route("/api/post/create", methods=["POST"])
-def create_post_by_pid():
-    uid = int(request.args.get('userId', None))
-    post_content = request.args.get('content', None)
-    print("Uid and post content is ", uid, post_content)
+@application.route("/api/post/create/<uid>/<title>/<content>/<date>/<image>", methods=["POST"])
+def create_post(uid, title, content, date, image):
 
-    result = PostResource.create_by_user(uid, post_content)
+    result = PostResource.create_by_user(uid, title, content, date, image)
+
+    if result:
+        rsp = Response("SUCCESSFULLY CREATE", status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT SUCCESSFULLY CREATE", status=404, content_type="application.json")
+
+    return rsp
+
+
+@application.route("/api/post/update/<postId>/<content>", methods=["PUT"])
+def update_post_by_pid(postId, content):
+
+    result = PostResource.update_by_key(postId, content)
 
     if result:
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
-        rsp = Response("NOT SUCCESSFULLY CREATE", status=404, content_type="text/plain")
+        rsp = Response("NOT SUCCESSFULLY UPDATE", status=404, content_type="application.json")
 
     return rsp
 
 
-@application.route("/api/post/update", methods=["PUT"])
-def update_post_by_pid():
-    pid = int(request.args.get('postId', None))
-    content = request.args.get('content', None)
-    print("Post to be updated is ", pid)
-
-    result = PostResource.update_by_key(pid, content)
-
-    if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
-    else:
-        rsp = Response("NOT SUCCESSFULLY UPDATE", status=404, content_type="text/plain")
-
-    return rsp
-
-
-@application.route("/api/post/delete", methods=["DELETE"])
-def delete_post_by_pid():
-    pid = int(request.args.get('postId', None))
-    print("Post to be deleted is ", pid)
+@application.route("/api/post/delete/<pid>", methods=["DELETE"])
+def delete_post_by_pid(pid):
 
     result = PostResource.delete_by_key(pid)
 
     if result:
-        rsp = Response("NOT SUCCESSFULLY DELETE", status=404, content_type="text/plain")
+        rsp = Response("NOT SUCCESSFULLY DELETE", status=404, content_type="application.json")
     else:
-        rsp = Response("SUCCESSFULLY DELETE", status=200, content_type="text/plain")
+        rsp = Response("SUCCESSFULLY DELETE", status=200, content_type="application.json")
 
     return rsp
 
 
 if __name__ == "__main__":
-    application.run(host="0.0.0.0", port=5011)
+    application.run(host="0.0.0.0", port=5011, debug=True)

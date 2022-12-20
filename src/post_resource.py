@@ -35,26 +35,25 @@ class PostResource:
             # ToDo: fetchmany() can be used when pagination
             result = cur.fetchall()
         else:
-            sql = "SELECT * FROM f22_cc_databases.post_table where postId=%d"
-            res = cur.execute(sql, args=key)
+            sql = "SELECT * FROM f22_cc_databases.post_table where postId=%s"
+            res = cur.execute(sql, args=[key])
             result = cur.fetchone()
 
         return result
 
     @staticmethod
-    def create_by_user(uid, post_content):
-        pid = random.randint(0, 10000)
+    def create_by_user(uid, title, content, post_date, image):
         insert_sql = """
-            insert into f22_cc_databases.post_table(postId, userId, post)
-            values(%d,%d,%s)
+            insert into f22_cc_databases.post_table(userId, post_title, post_content, date, image)
+            values(%s,%s,%s,%s,%s)
         """
 
-        result = None
+        result = False
         try:
             conn = PostResource._get_connection()
             cur = conn.cursor()
-            res = cur.execute(insert_sql, args=[pid, uid, post_content])
-            result = PostResource.get_by_key(pid)
+            res = cur.execute(insert_sql, args=[uid, title, content, post_date, image])
+            result = True
         except Exception as e:
             print("Exception: ", e)
 
@@ -63,7 +62,7 @@ class PostResource:
     @staticmethod
     def delete_by_key(pid):
         delete_sql = """
-            DELETE FROM f22_cc_databases.post_table WHERE postId=%d
+            DELETE FROM f22_cc_databases.post_table WHERE postId=%s
         """
 
         result = None
@@ -81,8 +80,8 @@ class PostResource:
     def update_by_key(pid, content):
         update_sql = """
                 UPDATE f22_cc_databases.post_table 
-                SET post=%s
-                WHERE postId=%d
+                SET post_content=%s
+                WHERE postId=%s
             """
         result = None
         try:
