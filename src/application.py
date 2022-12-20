@@ -4,6 +4,10 @@ import json
 from post_resource import PostResource
 from post import Post
 from flask_cors import CORS
+from middleware.sns_notification import Notification
+from flask import Response, request
+
+sns_middleware = Notification()
 
 # Create the Flask application object.
 application = Flask(__name__,
@@ -13,6 +17,12 @@ application = Flask(__name__,
 
 CORS(application)
 
+@application.after_request
+def after_request_func(response):
+    print("after_request executing! Response = \n", json.dumps(response, indent=2, default=str))
+    sns_middleware.check_publish(request, response)
+
+    return response
 
 @application.get("/api/post")
 def get_health():
@@ -47,10 +57,11 @@ def create_post(uid, title, content, date, image):
     result = PostResource.create_by_user(uid, title, content, date, image)
 
     if result:
-        rsp = Response("SUCCESSFULLY CREATE", status=200, content_type="application.json")
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
         rsp = Response("NOT SUCCESSFULLY CREATE", status=404, content_type="application.json")
 
+    print("Finish operation and the response is ", rsp)
     return rsp
 
 

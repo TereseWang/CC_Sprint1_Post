@@ -48,12 +48,15 @@ class PostResource:
             values(%s,%s,%s,%s,%s)
         """
 
-        result = False
+        result = None
         try:
             conn = PostResource._get_connection()
             cur = conn.cursor()
             res = cur.execute(insert_sql, args=[uid, title, content, post_date, image])
-            result = True
+            id_new = cur.lastrowid
+            sql = "SELECT * FROM f22_cc_databases.post_table where postId=%s"
+            res = cur.execute(sql, args=[id_new])
+            result = cur.fetchone()
         except Exception as e:
             print("Exception: ", e)
 
