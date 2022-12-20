@@ -32,4 +32,5 @@ Select the file ```tts.py``` and run it. The message will determine if your end-
 
 The file ```post_resource.py``` is a simple, starter REST resource.
 
-
+### ENVVAR
+PYTHONUNBUFFERED=1;DBUSER=admin;DBPW=dbuserdbuser;DBHOST=coms6156-1.cq910pshvahp.us-east-1.rds.amazonaws.com
