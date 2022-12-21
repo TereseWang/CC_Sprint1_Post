@@ -11,9 +11,13 @@ class PostResource:
     @staticmethod
     def _get_connection():
 
-        usr = os.environ.get("DBUSER")
-        pw = os.environ.get("DBPW")
-        h = os.environ.get("DBHOST")
+        # usr = os.environ.get("DBUSER")
+        # pw = os.environ.get("DBPW")
+        # h = os.environ.get("DBHOST")
+
+        usr = "admin"
+        pw = "dbuserdbuser"
+        h = "coms6156-1.cq910pshvahp.us-east-1.rds.amazonaws.com"
 
         conn = pymysql.connect(
             user=usr,
