@@ -14,7 +14,7 @@ class Notification():
         res = self.sns_client.publish(
             TopicArn=sns_topic,
             Message=json.dumps(json_message, indent=2, default=str),
-            Subject='Some change in Post'
+            Subject='SoEme change in Post'
         )
 
         print("publish_notification response = ", json.dumps(res, indent=2, default=str))
