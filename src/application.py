@@ -67,15 +67,18 @@ def create_post():
         ret = dict(success=False)
         return ret
 
-@app.route("/api/post/<pid>", methods=["GET"])
-def get_post_by_pid(pid):
+@app.route("/api/post", methods=["GET"])
+def get_post_by_pid():
+    args = request.args
     try:
-        user = Post.query.filter(Post.pid == pid).first()
-        if user:
-            msg = user.toJson()
-            result = Response(json.dumps(msg), status=200, content_type="application.json")
-        else:
-            result = Response("post cannot be found", status=500, content_type="application.json")
+        if 'pid' in args:
+            pid = args.get('pid', type=int)
+            post = Post.query.filter(Post.pid == pid).first()
+            if post:
+                msg = post.toJson()
+                result = Response(json.dumps(msg), status=200, content_type="application.json")
+            else:
+                result = Response("post cannot be found", status=500, content_type="application.json")
         return result
     except Exception as e:
         print(e)
@@ -101,15 +104,17 @@ def updateByIdWithContent():
         return {'success': False}
 
 
-@app.route("/comment/delete/<pid>", methods=['DELETE'])
-def deleteComment(pid):
+@app.route("/api/post/delete", methods=['DELETE'])
+def deletepost():
+    args = request.args
     try:
-        # comment = Comments.query.get(commentId)
-        post = Post.query.filter(Post.pid == pid)
-        cnt = post.delete()
-        db.session.commit()
-        ret = dict(success=True, cnt=cnt)
-        return ret
+        if 'pid' in args:
+            pid = args.get('pid', type=int)
+            post = Post.query.filter(Post.pid == pid)
+            cnt = post.delete()
+            db.session.commit()
+            ret = dict(success=True, cnt=cnt)
+            return ret
     except Exception as e:
         print(e)
         ret = dict(success=False)
