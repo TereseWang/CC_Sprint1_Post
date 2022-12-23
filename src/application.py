@@ -69,16 +69,13 @@ def create_post():
 
 @app.route("/api/post", methods=["GET"])
 def get_post_by_pid():
-    args = request.args
     try:
-        if 'pid' in args:
-            pid = args.get('pid', type=int)
-            post = Post.query.filter(Post.pid == pid).first()
-            if post:
-                msg = post.toJson()
-                result = Response(json.dumps(msg), status=200, content_type="application.json")
-            else:
-                result = Response("post cannot be found", status=500, content_type="application.json")
+        posts = Post.query.all()
+        if posts:
+            msg = posts.toJson()
+            result = Response(json.dumps(msg), status=200, content_type="application.json")
+        else:
+            result = Response("post cannot be found", status=500, content_type="application.json")
         return result
     except Exception as e:
         print(e)
