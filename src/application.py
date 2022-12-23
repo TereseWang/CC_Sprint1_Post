@@ -72,8 +72,7 @@ def get_post_by_pid():
     try:
         posts = Post.query.all()
         if posts:
-            msg = posts.toJson()
-            result = Response(json.dumps(msg), status=200, content_type="application.json")
+            result = Response(json.dumps(posts), status=200, content_type="application.json")
         else:
             result = Response("post cannot be found", status=500, content_type="application.json")
         return result
