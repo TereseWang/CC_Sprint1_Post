@@ -33,14 +33,14 @@ class Notification():
                     if request.method == 'POST':
                         data = {
                             "Operation": parameters[5],
-                            "UserId": request.form['uid'],
-                            "Title": request.form['title'],
-                            "Content": request.form['content']
+                            "UserId": request.json['uid'],
+                            "Title": request.json['title'],
+                            "Content": request.json['content']
                         }
                     else:
                         data = {
                             "Operation": parameters[5],
-                            "PostId": request.form['pid']
+                            "PostId": request.json['pid']
                         }
                     print(data)
                     event["new_data"] = data

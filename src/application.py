@@ -55,8 +55,8 @@ def after_request_func(response):
 @app.route("/api/post/create", methods=["POST"])
 def create_post():
     try:
-        uid, title, content, image = request.form['uid'], request.form['title'],request.form['content'], \
-                                request.form['image']
+        uid, title, content, image = request.json['uid'], request.json['title'],request.json['content'], \
+                                request.json['image']
         post = Post(uid, title, content, image)
         db.session.add(post)
         db.session.commit()
@@ -87,7 +87,7 @@ def get_post_by_pid(pid):
 def updateByIdWithContent():
     print("try to update")
     try:
-        pid, title, content, image = request.form['pid'], request.form['title'], request.form['content'], request.form['image']
+        pid, title, content, image = request.json['pid'], request.json['title'], request.json['content'], request.json['image']
         post = Post.query.filter(Post.pid == pid).first()
         post.content = content
         post.title = title
