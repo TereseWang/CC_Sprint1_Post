@@ -1,95 +1,119 @@
-from flask import Flask, Response, request
+from flask import Flask
 from datetime import datetime
 import json
-from post_resource import PostResource
-from post import Post
 from flask_cors import CORS
 from middleware.sns_notification import Notification
 from flask import Response, request
+import flask_sqlalchemy
 
 sns_middleware = Notification()
-
-# Create the Flask application object.
-application = Flask(__name__,
+db = flask_sqlalchemy.SQLAlchemy()
+app = Flask(__name__,
             static_url_path='/',
             static_folder='static/class-ui/',
             template_folder='web/templates')
+CORS(app)
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://admin:WHQ21cd1c689742@postdb.cyww6g5eerrg.us-east-1.rds.amazonaws.com:3306/post_database?charset=utf8"
+db.init_app(app)
 
-CORS(application)
+class Post(db.Model):
+    __tablename__ = "post_info"
+    pid = db.Column('pid', db.Integer, primary_key=True)
+    uid = db.Column('uid', db.Integer)
+    title = db.Column('post_title', db.Text)
+    content = db.Column('post_content', db.Text)
+    image = db.Column('image', db.String(200))
+    date = db.Column('date', db.String(200))
 
-@application.after_request
+    def __init__(self, uid, title, content, image):
+        self.uid = uid
+        self.title = title
+        self.content = content
+        self.date = str(datetime.now())
+        self.image = image
+
+    def toJson(self):
+        return {
+            'pid': self.pid,
+            'uid': self.uid,
+            'post_title': self.title,
+            'post_content': self.content,
+            'image':self.image,
+            'date': self.date
+        }
+@app.route("/hello")
+def helloworld():
+    print('received')
+    return "hello, client!"
+
+@app.after_request
 def after_request_func(response):
     print("after_request executing! Response = \n", json.dumps(response, indent=2, default=str))
     sns_middleware.check_publish(request, response)
-
     return response
 
-@application.get("/api/post")
-def get_health():
-    t = str(datetime.now())
-    msg = {
-        "name": "CC-POST_SERVICE",
-        "health": "Good",
-        "at time": t
-    }
+@app.route("/api/post/create", methods=["POST"])
+def create_post():
+    try:
+        uid, title, content, image = request.form['uid'], request.form['title'],request.form['content'], \
+                                request.form['image']
+        post = Post(uid, title, content, image)
+        db.session.add(post)
+        db.session.commit()
+        ret = dict(success=True)
+        return ret
+    except Exception as e:
+        print(e)
+        ret = dict(success=False)
+        return ret
 
-    # DFF TODO Explain status codes, content type, ... ...
-    result = Response(json.dumps(msg), status=200, content_type="application/json")
-
-    return result
-
-
-@application.route("/api/post/<pid>", methods=["GET"])
+@app.route("/api/post/<pid>", methods=["GET"])
 def get_post_by_pid(pid):
-    result = PostResource.get_by_key(pid)
-
-    if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
-    else:
-        rsp = Response("NOT FOUND", status=404, content_type="application.json")
-
-    return rsp
-
-
-@application.route("/api/post/create/<uid>/<title>/<content>/<date>/<image>", methods=["POST"])
-def create_post(uid, title, content, date, image):
-
-    result = PostResource.create_by_user(uid, title, content, date, image)
-
-    if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
-    else:
-        rsp = Response("NOT SUCCESSFULLY CREATE", status=404, content_type="application.json")
-
-    print("Finish operation and the response is ", rsp)
-    return rsp
+    try:
+        user = Post.query.filter(Post.pid == pid).first()
+        if user:
+            msg = user.toJson()
+            result = Response(json.dumps(msg), status=200, content_type="application.json")
+        else:
+            result = Response("post cannot be found", status=500, content_type="application.json")
+        return result
+    except Exception as e:
+        print(e)
+        result = Response("get post failed", status=500, content_type="application.json")
+        return result
 
 
-@application.route("/api/post/update/<postId>/<content>", methods=["PUT"])
-def update_post_by_pid(postId, content):
+@app.route("/api/post/update", methods=["POST"])
+def updateByIdWithContent():
+    print("try to update")
+    try:
+        pid, title, content, image = request.form['pid'], request.form['title'], request.form['content'], request.form['image']
+        post = Post.query.filter(Post.pid == pid).first()
+        post.content = content
+        post.title = title
+        post.image = image
+        post.date = str(datetime.now())
+        db.session.add(post)
+        db.session.commit()
+        return {'success': True}
+    except Exception as e:
+        print(e)
+        return {'success': False}
 
-    result = PostResource.update_by_key(postId, content)
 
-    if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
-    else:
-        rsp = Response("NOT SUCCESSFULLY UPDATE", status=404, content_type="application.json")
-
-    return rsp
-
-
-@application.route("/api/post/delete/<pid>", methods=["DELETE"])
-def delete_post_by_pid(pid):
-
-    result = PostResource.delete_by_key(pid)
-
-    if result:
-        rsp = Response("NOT SUCCESSFULLY DELETE", status=404, content_type="application.json")
-    else:
-        rsp = Response("SUCCESSFULLY DELETE", status=200, content_type="application.json")
-
-    return rsp
-
+@app.route("/comment/delete/<pid>", methods=['DELETE'])
+def deleteComment(pid):
+    try:
+        # comment = Comments.query.get(commentId)
+        post = Post.query.filter(Post.pid == pid)
+        cnt = post.delete()
+        db.session.commit()
+        ret = dict(success=True, cnt=cnt)
+        return ret
+    except Exception as e:
+        print(e)
+        ret = dict(success=False)
+        return ret
 
 if __name__ == "__main__":
-    application.run(host="0.0.0.0", port=5011, debug=True)
+    app.run(host="0.0.0.0", port=5011, debug=True)
