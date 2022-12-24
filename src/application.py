@@ -71,6 +71,7 @@ def create_post():
 def get_post_by_pid():
     try:
         posts = Post.query.all()
+        print(posts)
         if posts:
             result = Response(json.dumps(posts), status=200, content_type="application.json")
         else:
