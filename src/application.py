@@ -74,7 +74,9 @@ def get_post_by_pid():
         print(posts)
         resp = []
         for post in posts:
-            resp.append(post.json())
+            resp.append(post.toJson())
+            print(resp)
+            print(post.toJson())
         result = Response(json.dumps(resp), status=200, content_type="application.json")
         return result
     except Exception as e:
