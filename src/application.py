@@ -72,10 +72,10 @@ def get_post_by_pid():
     try:
         posts = Post.query.all()
         print(posts)
-        if posts:
-            result = Response(json.dumps(posts), status=200, content_type="application.json")
-        else:
-            result = Response("post cannot be found", status=500, content_type="application.json")
+        resp = []
+        for post in posts:
+            resp.append(post.json())
+        result = Response(json.dumps(resp), status=200, content_type="application.json")
         return result
     except Exception as e:
         print(e)
