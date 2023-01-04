@@ -7,8 +7,8 @@ class Notification():
     def __init__(self):
         self.s_topic = "arn:aws:sns:us-east-1:950047596654:Post_Topic"
         self.sns_client = boto3.client('sns', region_name='us-east-1',
-                                       aws_access_key_id='AKIA52MZ74BXAJVWB6N2',
-                                       aws_secret_access_key= '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')
+                                       aws_access_key_id='xxxxxx',
+                                       aws_secret_access_key= 'xxxxx/')
 
     def publish_notification(self, sns_topic, json_message):
         res = self.sns_client.publish(
